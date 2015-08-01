@@ -1,0 +1,120 @@
+<html>
+<head>
+    <title>Spiral</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+<script src="../js/lib/three.js/three.js"></script>
+<script src="../js/lib/three.js/controls/OrbitControls.js"></script>
+<script>
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, .1, 100000000 );
+    var renderer = new THREE.WebGLRenderer();
+
+    // setup control
+    controls = new THREE.OrbitControls( camera );
+
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+
+    group = new THREE.Group();
+    var geometry = new THREE.BoxGeometry( 50, 50, 50 );
+    scene.add(group);
+
+    // set background.
+    renderer.setClearColor(0x161618);
+
+    var theta = 0.01;
+    var i = 0;
+    var geoSize = 50;
+    var update = 100;
+    var zt = 45;
+    var totalSpheres = 10000;
+    var finishedDraw = false;
+    var finishedBack = false;
+
+    camera.position.x= 400;
+    camera.position.y= 1000;
+
+    var zStart = 1713;
+    var zMax = 99999999;
+    camera.position.z = zStart;
+
+    var render = function () {
+        requestAnimationFrame( render );
+
+        if ( i < totalSpheres && !finishedDraw)
+        {
+//
+            var material = new THREE.MeshBasicMaterial(
+                    {
+                        color: "#"+((1<<24)*Math.random()|0).toString(16),
+                        vertexColors: THREE.FaceColors
+                    } );var mesh = new THREE.Mesh( geometry, material );
+            angle = 0.1 * i;
+            var add = i*25;
+
+            mesh.position.x=(add+angle)*Math.cos(angle);
+            mesh.position.y=(add+angle)*Math.sin(angle);
+            mesh.position.z = add;
+            group.add( mesh );
+            i++;
+
+            if (i > update)
+            {
+                geometry = new THREE.BoxGeometry( geoSize, geoSize, geoSize );
+                update += 50;
+                geoSize += 20;
+            }
+            camera.position.x= 400;
+            camera.position.y= 1000;
+
+        }
+        else if (finishedDraw == false )
+        {
+
+            zt = zt*-1;
+            finishedDraw =true;
+            zMax = camera.position.z;
+        }
+
+
+
+        if( camera.position.z >= zStart)
+        {
+            camera.translateZ(zt);
+        }
+        else
+        {
+            zt = zt*-1;
+            camera.position.z = zStart;
+        }
+
+        if ( camera.position.z >= zMax)
+        {
+            zt = zt*-1;
+        }
+
+
+
+
+
+
+
+
+        controls.update();
+
+        renderer.render(scene, camera);
+    };
+
+    render();
+
+</script>
+</body>
+</html>
